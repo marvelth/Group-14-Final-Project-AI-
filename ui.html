@@ -585,99 +585,64 @@ function computeRiasec(){
 
 async function analyzeWithAI(){
   const riasec = computeRiasec();
-  const topRiasec = Object.entries(riasec).sort((a,b)=>b[1]-a[1]).slice(0,3).map(e=>e[0]).join("");
 
-  const profileSummary = `
-Nama: ${userData.nama}, Kelas: ${userData.kelas}
-
-NILAI RAPOR (0-100):
-- Matematika: ${nilaiData.math}
-- B. Inggris: ${nilaiData.binggris}
-- B. Indonesia: ${nilaiData.bindo}
-- Fisika: ${nilaiData.fisika}
-- Kimia: ${nilaiData.kimia}
-- Biologi: ${nilaiData.bio}
-- Ekonomi: ${nilaiData.ekonomi}
-- Sosiologi: ${nilaiData.sosiologi}
-
-PRESTASI: Level ${prestasiVal}/4 (0=tidak ada, 4=internasional)
-Bidang Prestasi: ${bidangPrestasi||"(tidak ada)"}
-
-MINAT UTAMA (dipilih siswa): ${minatList.join(", ")||"(tidak dipilih)"}
-
-SKOR RIASEC:
-R (Realistic): ${riasec.R}/30
-I (Investigative): ${riasec.I}/30
-A (Artistic): ${riasec.A}/30
-S (Social): ${riasec.S}/30
-E (Enterprising): ${riasec.E}/30
-C (Conventional): ${riasec.C}/30
-Tipe RIASEC dominan: ${topRiasec}
-
-DAFTAR JURUSAN DAN PROFIL (format: jurusan|bidang|math|bindo|binggris|bio|fisika|kimia|ekonomi|sosiologi|R|I|A|S|E|C):
-${MAJOR_PROFILES.map(m=>`${m.jurusan}|${m.bidang}|${m.math}|${m.bindo}|${m.binggris}|${m.bio}|${m.fisika}|${m.kimia}|${m.ekonomi}|${m.sosiologi}|${m.R}|${m.I}|${m.A}|${m.S}|${m.E}|${m.C}`).join("\n")}`;
-
-  const prompt = `Kamu adalah konselor pendidikan AI yang membantu siswa Indonesia memilih jurusan kuliah.
-
-Profil siswa:
-${profileSummary}
-
-INSTRUKSI PENILAIAN:
-1. Hitung kecocokan setiap jurusan dengan siswa menggunakan bobot:
-   - Nilai rapor: bandingkan nilai siswa (0-100, skala ke 1-5 dengan ÷20) dengan kebutuhan jurusan (1-5). Hitung similarity.
-   - RIASEC: bandingkan skor siswa (normalisasi per dimensi ke 1-5 dengan ÷6) dengan profil jurusan RIASEC.
-   - Minat: jurusan yang bidangnya ada di minat siswa dapat bonus 10 poin.
-   - Prestasi: bidang prestasi siswa sesuai bidang jurusan dapat bonus sesuai level (0-4).
-   
-2. Pilih TOP 3 jurusan dengan skor kecocokan tertinggi.
-
-3. Tulis alasan personal yang spesifik (2-3 kalimat) mengapa siswa ini cocok dengan setiap jurusan, berdasarkan kekuatan nyata dari nilainya, tipe RIASEC, dan minat. Jangan generik.
-
-Balas HANYA dengan JSON valid berikut, tanpa teks lain:
-{
-  "top3": [
-    {
-      "jurusan": "Nama Jurusan",
-      "bidang": "Bidang",
-      "persen": 87,
-      "alasan": "Alasan personal spesifik kenapa siswa ini cocok..."
+  // Prepare request data untuk KNN API
+  const requestData = {
+    nama: userData.nama,
+    kelas: userData.kelas,
+    nilai: {
+      math: nilaiData.math,
+      bindo: nilaiData.bindo,
+      binggris: nilaiData.binggris,
+      bio: nilaiData.bio,
+      fisika: nilaiData.fisika,
+      kimia: nilaiData.kimia,
+      ekonomi: nilaiData.ekonomi,
+      sosiologi: nilaiData.sosiologi
     },
-    {
-      "jurusan": "Nama Jurusan",
-      "bidang": "Bidang",
-      "persen": 82,
-      "alasan": "..."
+    riasec: {
+      'R': riasec.R,
+      'I': riasec.I,
+      'A': riasec.A,
+      'S': riasec.S,
+      'E': riasec.E,
+      'C': riasec.C
     },
-    {
-      "jurusan": "Nama Jurusan",
-      "bidang": "Bidang",
-      "persen": 79,
-      "alasan": "..."
-    }
-  ]
-}`;
+    prestasi: prestasiVal,
+    bidang_prestasi: bidangPrestasi,
+    minat: minatList
+  };
 
   try {
-    const resp = await fetch("https://api.anthropic.com/v1/messages",{
+    const resp = await fetch("http://localhost:5000/api/analyze",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        model:"claude-sonnet-4-6",
-        max_tokens:1000,
-        messages:[{role:"user",content:prompt}]
-      })
+      body:JSON.stringify(requestData)
     });
-    const data = await resp.json();
-    const rawText = data.content.map(c=>c.text||"").join("");
-    const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-    if(!jsonMatch) throw new Error("No JSON");
-    const result = JSON.parse(jsonMatch[0]);
-    renderHasil(result.top3, riasec);
+    
+    if(!resp.ok) {
+      const error = await resp.json();
+      throw new Error(error.error || `HTTP ${resp.status}`);
+    }
+    
+    const result = await resp.json();
+    
+    if(result.success && result.top3) {
+      renderHasil(result.top3, riasec);
+    } else {
+      throw new Error("Format response tidak valid");
+    }
   } catch(e){
+    console.error("KNN Analysis Error:", e);
     document.getElementById("hasil-content").innerHTML = `
       <div style="text-align:center;padding:60px 24px">
         <div style="font-size:48px;margin-bottom:16px">😔</div>
-        <p style="color:var(--ink-soft)">Terjadi kesalahan saat menganalisis. Coba ulangi lagi.</p>
+        <p style="color:var(--ink-soft);font-weight:600">Terjadi kesalahan saat menganalisis</p>
+        <p style="color:var(--ink-soft);font-size:13px;margin-top:8px">${e.message}</p>
+        <p style="color:var(--ink-soft);font-size:12px;margin-top:12px">
+          <strong>💡 Tip:</strong> Pastikan Flask server sudah running dengan:<br>
+          <code style="background:#f0f0f0;padding:8px;border-radius:4px;display:inline-block;margin-top:6px">python app_integrated.py</code>
+        </p>
         <button class="btn-restart" onclick="location.reload()">Mulai Ulang</button>
       </div>`;
   }
