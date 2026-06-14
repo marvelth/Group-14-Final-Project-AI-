@@ -1,0 +1,31 @@
+jurusan,bidang,math,bindo,binggris,bio,fisika,kimia,ekonomi,sosiologi,R,I,A,S,E,C
+Kedokteran,Kesehatan,4,3,4,5,4,5,1,2,2,5,1,4,1,4
+Farmasi,Kesehatan,4,3,3,4,3,5,1,1,1,5,1,2,1,5
+Teknik Industri,Teknik,4,2,3,1,4,2,3,1,3,4,1,2,4,5
+Teknik Sipil,Teknik,4,2,2,1,5,2,1,1,5,4,1,1,2,3
+Teknik Elektro,Teknik,5,2,3,1,5,3,1,1,5,5,1,1,1,3
+Teknik Mesin,Teknik,4,2,2,1,5,2,1,1,5,4,1,1,1,2
+Arsitektur,Teknik,3,2,3,1,3,1,1,1,3,3,5,1,2,2
+Teknik Informatika,Sains dan Teknologi,5,3,4,1,4,1,1,1,4,5,1,1,2,3
+Sistem Informasi,Sains dan Teknologi,4,3,4,1,3,1,4,2,2,4,1,3,4,4
+Statistika,Sains dan Teknologi,5,2,3,1,3,1,2,1,1,5,1,1,1,5
+Aktuaria,Sains dan Teknologi,5,2,3,1,3,1,4,1,1,5,1,1,2,5
+Matematika,Sains dan Teknologi,5,2,2,1,2,1,1,1,1,5,1,1,1,4
+Biologi,Sains dan Teknologi,3,3,2,5,2,3,1,1,2,5,1,1,1,2
+Bimbingan dan Konseling,Pendidikan dan Kreatif,2,4,3,1,1,1,1,5,1,2,1,5,2,3
+Pendidikan Bahasa Inggris,Pendidikan dan Kreatif,2,4,5,1,1,1,1,3,1,2,2,5,2,3
+DKV,Pendidikan dan Kreatif,1,2,2,1,1,1,1,1,1,1,5,1,2,1
+Film dan Animasi,Pendidikan dan Kreatif,1,2,2,1,1,1,1,1,1,1,5,1,2,1
+Manajemen,Ekonomi dan Bisnis,3,3,3,1,1,1,5,2,1,2,1,3,5,3
+Akuntansi,Ekonomi dan Bisnis,5,2,2,1,1,1,5,1,1,3,1,1,3,5
+Bisnis Digital,Ekonomi dan Bisnis,3,3,4,1,1,1,4,2,1,3,2,3,5,3
+Ekonomi,Ekonomi dan Bisnis,4,3,3,1,1,1,5,2,1,4,1,2,3,4
+Kewirausahaan,Ekonomi dan Bisnis,2,2,3,1,1,1,4,2,1,2,2,3,5,2
+Ilmu Kelautan,Pertanian dan Kelautan,3,2,2,4,3,2,1,1,4,4,1,1,1,2
+Agroteknologi,Pertanian dan Kelautan,3,2,2,5,2,3,1,1,4,4,1,1,1,3
+Agribisnis,Pertanian dan Kelautan,2,2,2,2,1,1,4,2,2,2,1,2,5,3
+Psikologi,Sosial hukum dan Pemerintahan,2,4,4,2,1,1,1,5,1,3,2,5,2,2
+Hukum,Sosial hukum dan Pemerintahan,2,5,5,1,1,1,2,4,1,3,1,2,5,3
+Hubungan Internasional,Sosial hukum dan Pemerintahan,2,4,5,1,1,1,2,4,1,3,2,4,4,2
+Ilmu Politik,Sosial hukum dan Pemerintahan,2,4,4,1,1,1,2,4,1,3,1,3,5,2
+Administrasi Publik,Sosial hukum dan Pemerintahan,2,4,3,1,1,1,3,4,1,2,1,4,3,5
