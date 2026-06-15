@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduPath AI – Discover Your Future Major</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  
+  <!-- Scripts defer loading -->
+  <script src="js/app.js" defer></script>
+  <script src="js/riasec.js" defer></script>
+  <script src="js/results.js" defer></script>
+</head>
+<body>
+
+  <!-- ====== LANDING PAGE ====== -->
+  <div class="page active" id="page-landing">
+    <div class="landing-blob blob1"></div>
+    <div class="landing-blob blob2"></div>
+    <div class="landing-blob blob3"></div>
+    <div class="landing-content">
+      <div class="landing-badge">✦ AI-Powered Major Recommendation</div>
+      <h1 class="landing-title">Discover the <span>major</span><br>that truly fits you.</h1>
+      <p class="landing-sub">Answer a few questions about your grades, achievements, and interests. Our AI will help identify the college majors that best match your profile.</p>
+      <button class="btn-hero" onclick="openDisclaimer()">Find out which major suits you!</button>
+      <div class="landing-stats">
+        <div class="stat"><strong>Only 10 minutes</strong>Completion time</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== DISCLAIMER MODAL ====== -->
+  <div class="modal-overlay" id="modal-disclaimer">
+    <div class="modal">
+      <div class="modal-icon">📋</div>
+      <h2>Before You Begin</h2>
+      <p>This assessment is designed to help you explore major options. Please review the guidelines below to ensure accurate recommendations:</p>
+      <ul class="disclaimer-list">
+        <li>Answer all questions <strong>honestly</strong> according to your true preferences</li>
+        <li>There are no right or wrong answers, this is all about <strong>you</strong></li>
+        <li>Ensure the average report card grades you enter are <strong>correct and up to date</strong></li>
+        <li>These results serve as an <strong>initial recommendation</strong>, not a final decision</li>
+        <li>Please continue to <strong>discuss and consult</strong> the results with a guidance counselor or parents</li>
+      </ul>
+      <div class="modal-form">
+        <div class="form-group">
+          <label for="input-nama">Full Name</label>
+          <input type="text" id="input-nama" placeholder="Enter your name here..." maxlength="60">
+        </div>
+        <div class="form-group">
+          <label for="input-kelas">Grade / Class</label>
+          <select id="input-kelas">
+            <option value="">Select Grade</option>
+            <option value="10">Grade 10</option>
+            <option value="11">Grade 11</option>
+            <option value="12">Grade 12</option>
+          </select>
+        </div>
+        <button class="btn-primary" onclick="startAkademik()">Continue to Academic Data</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== ACADEMIC PAGE ====== -->
+  <div class="page" id="page-akademik">
+    <div class="page-header">
+      <div class="logo">EduPath<span>AI</span></div>
+      <div class="step-label">Step 1 of 3</div>
+    </div>
+    <div class="form-container">
+      <h2 class="section-title">Academic Data</h2>
+      <p class="section-sub">Fill in your average report card grades (0-100), achievements, and interests.</p>
+
+      <!-- Card 1: Subject Grades -->
+      <div class="card">
+        <div class="card-label">📊 Subject Grades</div>
+        <div class="nilai-grid" id="nilai-grid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Card 2: Achievements -->
+      <div class="card">
+        <div class="card-label">🏆 Achievements</div>
+        <p style="font-size:13px; color:var(--ink-soft); margin-bottom:12px;">Your highest level of academic or extracurricular achievement:</p>
+        <div class="prestasi-options" id="prestasi-options">
+          <div class="pill-option active" data-val="0" onclick="selectPrestasi(this)">None</div>
+          <div class="pill-option" data-val="1" onclick="selectPrestasi(this)">District Level</div>
+          <div class="pill-option" data-val="2" onclick="selectPrestasi(this)">City/Province Level</div>
+          <div class="pill-option" data-val="3" onclick="selectPrestasi(this)">National Level</div>
+          <div class="pill-option" data-val="4" onclick="selectPrestasi(this)">International Level</div>
+        </div>
+        <div id="bidang-section" style="display:none;">
+          <p style="font-size:13px; color:var(--ink-soft); margin-top:16px; margin-bottom:10px;">In which field did you achieve this?</p>
+          <div class="bidang-grid" id="bidang-options">
+            <div class="bidang-option" data-val="Health" onclick="selectBidang(this)">🏥 Health</div>
+            <div class="bidang-option" data-val="Technology" onclick="selectBidang(this)">💻 Technology</div>
+            <div class="bidang-option" data-val="Physics" onclick="selectBidang(this)">⚡ Physics</div>
+            <div class="bidang-option" data-val="Mathematics" onclick="selectBidang(this)">📐 Mathematics</div>
+            <div class="bidang-option" data-val="Biology" onclick="selectBidang(this)">🌿 Biology</div>
+            <div class="bidang-option" data-val="Chemistry" onclick="selectBidang(this)">🧪 Chemistry</div>
+            <div class="bidang-option" data-val="Business" onclick="selectBidang(this)">💼 Business</div>
+            <div class="bidang-option" data-val="Engineering" onclick="selectBidang(this)">🔧 Engineering</div>
+            <div class="bidang-option" data-val="Earth Science" onclick="selectBidang(this)">🌍 Earth Science</div>
+            <div class="bidang-option" data-val="Arts" onclick="selectBidang(this)">🎨 Arts</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: Primary Interests -->
+      <div class="card">
+        <div class="card-label">💡 Primary Interests <span style="font-weight:400; text-transform:none; font-size:11px; color:var(--ink-soft); margin-left:5px;">(select up to 3 fields)</span></div>
+        <div class="minat-grid" id="minat-grid">
+          <div class="minat-card" data-val="Health" onclick="toggleMinat(this)"><span class="minat-icon">🏥</span>Health</div>
+          <div class="minat-card" data-val="Science & Technology" onclick="toggleMinat(this)"><span class="minat-icon">🔬</span>Science & Tech</div>
+          <div class="minat-card" data-val="Social, Law & Government" onclick="toggleMinat(this)"><span class="minat-icon">⚖️</span>Social, Law & Govt</div>
+          <div class="minat-card" data-val="Economics & Business" onclick="toggleMinat(this)"><span class="minat-icon">📊</span>Economics & Business</div>
+          <div class="minat-card" data-val="Engineering" onclick="toggleMinat(this)"><span class="minat-icon">⚙️</span>Engineering</div>
+          <div class="minat-card" data-val="Agriculture & Maritime" onclick="toggleMinat(this)"><span class="minat-icon">🌾</span>Agriculture & Maritime</div>
+          <div class="minat-card" data-val="Arts & Education" onclick="toggleMinat(this)"><span class="minat-icon">🎭</span>Arts & Education</div>
+        </div>
+        <p class="minat-count" id="minat-count">0 / 3 fields selected</p>
+      </div>
+
+      <button class="btn-primary" onclick="goToRiasec()" style="max-width:360px; margin:0 auto; display:block; margin-top:30px;">Continue to Interest & Aptitude Test</button>
+    </div>
+  </div>
+
+  <!-- ====== RIASEC PAGE ====== -->
+  <div class="page" id="page-riasec">
+    <div class="page-header">
+      <div class="logo">EduPath<span>AI</span></div>
+      <div class="step-label">Step 2 of 3</div>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-meta">
+        <span id="progress-label">Question 1 of 36</span>
+        <span id="progress-pct">0%</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+      <div style="height:10px"></div>
+    </div>
+    <div class="riasec-q-container">
+      <div class="q-type-badge" id="q-type-badge">◉ Realistic</div>
+      <div class="q-number" id="q-number">Question 1</div>
+      <div class="q-text" id="q-text">Loading question...</div>
+      <div class="answer-options" id="answer-options">
+        <button class="answer-btn" data-score="5" onclick="selectAnswer(this)"><span class="ans-score">5</span>Strongly Like</button>
+        <button class="answer-btn" data-score="4" onclick="selectAnswer(this)"><span class="ans-score">4</span>Like</button>
+        <button class="answer-btn" data-score="3" onclick="selectAnswer(this)"><span class="ans-score">3</span>Neutral / Moderate</button>
+        <button class="answer-btn" data-score="2" onclick="selectAnswer(this)"><span class="ans-score">2</span>Dislike</button>
+        <button class="answer-btn" data-score="1" onclick="selectAnswer(this)"><span class="ans-score">1</span>Strongly Dislike</button>
+      </div>
+      <div class="q-nav">
+        <button class="btn-nav btn-back" id="btn-back" onclick="prevQuestion()">← Back</button>
+        <button class="btn-nav btn-next" id="btn-next" onclick="nextQuestion()" disabled>Next</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== COMPLETION OVERLAY ====== -->
+  <div class="completion-overlay" id="modal-complete">
+    <div class="completion-card">
+      <div class="completion-emoji">🎉</div>
+      <h2>All Questions Completed!</h2>
+      <p>You have answered all 36 questions. Our AI recommendation engine will now evaluate your academic profile, achievements, interests, and RIASEC assessment to suggest your top majors.</p>
+      <button class="btn-primary" onclick="goToHasil()">View My Recommendations ✨</button>
+    </div>
+  </div>
+
+  <!-- ====== RESULTS PAGE ====== -->
+  <div class="page" id="page-hasil">
+    <div class="page-header">
+      <div class="logo">EduPath<span>AI</span></div>
+      <div class="step-label">Step 3 of 3</div>
+    </div>
+    <div class="hasil-header">
+      <div class="user-chip" id="hasil-user-chip">👤 —</div>
+      <h1>Your Major Recommendations</h1>
+      <p>AI-driven major suggestions based on your scholastic grades, achievements, interest areas, and RIASEC results.</p>
+    </div>
+    <div class="hasil-container">
+      <div id="hasil-content">
+        <div class="loading-state">
+          <div class="loading-spinner"></div>
+          <p style="color:var(--ink-soft); font-size:15px">EduPath AI is analyzing your profile...</p>
+          <p style="color:var(--ink-soft); font-size:13px; margin-top:6px">This will take only a few moments</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

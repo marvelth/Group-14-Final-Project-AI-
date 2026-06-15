@@ -1,185 +1,191 @@
-# 🎯 JurusanKu - Sistem Rekomendasi Jurusan Berbasis KNN AI
+# 🎯 EduPath AI — Major Recommendation System
 
-## 📌 Ringkasan Proyek
+## 📌 Overview
 
-**JurusanKu** adalah aplikasi web yang membantu siswa SMA (kelas 10-12) di Indonesia menemukan jurusan kuliah yang paling sesuai dengan profil mereka menggunakan algoritma **K-Nearest Neighbors (KNN)**.
+**EduPath AI** is an intelligent web application designed to help high school students (grades 10–12) discover their ideal university major. It uses a **K-Nearest Neighbors (KNN)** algorithm trained on a dynamically generated synthetic student dataset based on professional major profiles.
 
-Sistem ini menganalisis siswa berdasarkan 4 dimensi:
-1. ✅ **Nilai Akademik** - Nilai rapor 8 mata pelajaran
-2. ✅ **Prestasi** - Tingkat dan bidang prestasi akademik
-3. ✅ **Minat Utama** - 7 kategori bidang studi pilihan
-4. ✅ **Profil Kepribadian RIASEC** - Tes 36 pertanyaan
+The system analyzes student profiles across **4 dimensions**:
 
-Kemudian memberikan **top 3 rekomendasi jurusan** dengan skor kecocokan dan alasan spesifik.
+1. ✅ **Academic Scores** — Average grades in 8 subjects (0–100 scale)
+2. ✅ **Achievements** — Competition achievement levels and corresponding fields
+3. ✅ **Primary Interests** — Up to 3 selected areas of interest
+4. ✅ **RIASEC Personality Profile** — A 36-question interest and aptitude test
+
+Based on this data, it provides the **top 3 recommended majors** with similarity match percentages and randomized, highly personalized explanations.
 
 ---
 
-## 🚀 Quick Start (5 Menit)
+## 📁 Project Structure
+
+```
+├── frontend/                     # Frontend Client (HTML/CSS/JS)
+│   ├── index.html                # Single-page application UI
+│   ├── css/
+│   │   └── style.css             # Premium glassmorphism stylesheet
+│   └── js/
+│       ├── app.js                # Core app state & API handler
+│       ├── riasec.js             # RIASEC test flow controller
+│       └── results.js            # Results & charts rendering
+│
+├── backend/                      # Flask Backend API
+│   ├── app.py                    # Flask server endpoints & routing
+│   ├── utils.py                  # Personalized reason generator
+│   └── requirements.txt          # Python packages list
+│
+├── model/                        # Machine Learning Model Layer
+│   ├── knn_model.py              # KNN class & synthetic data generator
+│   ├── evaluate_knn.py           # Classifier accuracy evaluation script
+│   ├── major_profile.csv         # English ideal profile dataset
+│   └── riasec_questions.csv      # 36 English RIASEC questions
+│
+├── README.md                     # Documentation
+└── .gitignore                    # Ignored files (caches, venv)
+```
+
+---
+
+## Start
 
 ### 1️⃣ Install Dependencies
+
 ```bash
-pip install -r requirements.txt
+pip3 install -r backend/requirements.txt
 ```
 
-### 2️⃣ Jalankan Flask Server
+### 2️⃣ Run the Server
+
 ```bash
-python app_integrated.py
+python3 backend/app.py
 ```
 
-### 3️⃣ Akses Aplikasi
-Buka browser: **http://localhost:5000**
+### 3️⃣ Open the App
+
+Open your web browser and navigate to: **http://localhost:5001**
 
 ---
 
-## 📁 File Struktur
+## 🧠 How the AI Works
 
-```
-├── coba.html              # 🎨 Frontend HTML/CSS/JavaScript
-├── knn_model.py          # 🧠 Core KNN Algorithm
-├── app_integrated.py     # 🚀 Flask API Server
-├── test_knn_model.py     # 🧪 Test Suite
-├── major_profile.csv     # 📊 Dataset 31 Jurusan
-├── requirements.txt      # 📦 Dependencies
-├── SETUP_GUIDE.md       # 📖 Detailed Setup
-└── README.md            # 📄 This File
+### KNN Algorithm with Synthetic Training Data
 
+1. **Synthetic Data Generation**: For each of the 30 majors defined in `model/major_profile.csv`, the model generates 100 synthetic student records (totaling 3,000 samples) by applying Gaussian noise to the ideal major profile. This provides a robust training set.
+2. **Feature Vector**: Each student profile and major profile is structured as a 14-dimensional normalized vector:
+   - 8 academic scores normalized to a $0\text{--}1$ scale (Math, Indonesian, English, Biology, Physics, Chemistry, Economics, Sociology).
+   - 6 RIASEC scores normalized to a $0\text{--}1$ scale (Realistic, Investigative, Artistic, Social, Enterprising, Conventional).
+3. **Distance Calculation**: The system computes the Euclidean distance from the student's normalized vector to all 3,000 synthetic samples.
+4. **Weighted Voting**: The K-Nearest Neighbors (with $K=7$) vote on the best major matches, weighted by inverse distance.
+5. **Bonus Adjustment**: Distances are adjusted with bonuses:
+   - *Achievement Bonus*: Matches in achievement fields reduce distance by `level * 0.05`.
+   - *Interest Bonus*: Matches in interest fields reduce distance by `0.03` per matching interest.
+6. **Similarity Score**: Distance is converted to similarity percentage using:
 
-## 🧠 Algoritma KNN
+$$\text{similarity} = 100 \times e^{-\text{distance} \times 1.5}$$
 
-Sistem menggunakan **Euclidean Distance** untuk menghitung kecocokan antara profil siswa dan profil jurusan:
-
-$$\text{distance} = \sqrt{\sum_{i=1}^{14} (x_i - y_i)^2}$$
-
-**Semakin kecil distance → semakin cocok**
-
-Setiap siswa & jurusan direpresentasikan sebagai vektor 14 dimensi:
-- 8 nilai akademik (Math, Bindo, Binggris, Bio, Fisika, Kimia, Ekonomi, Sosiologi)
-- 6 skor RIASEC (Realistic, Investigative, Artistic, Social, Enterprising, Conventional)
+Matches are clamped to a realistic $40\%\text{--}98\%$ range.
 
 ---
 
 ## 🔧 API Endpoints
 
-### POST /api/analyze
-Menganalisis profil siswa dan return top 3 rekomendasi jurusan.
+### POST `/api/analyze`
 
-**Request:**
+Analyzes student profile and returns top 3 major recommendations.
+
+**Request Body Example:**
 ```json
 {
-  "nama": "Andi Pratama",
+  "nama": "Jane Doe",
   "kelas": "12",
   "nilai": {
-    "math": 85, "bindo": 75, "binggris": 80, "bio": 70,
-    "fisika": 88, "kimia": 82, "ekonomi": 65, "sosiologi": 72
+    "math": 85, 
+    "indonesian": 75, 
+    "english": 80, 
+    "biology": 70,
+    "physics": 88, 
+    "chemistry": 82, 
+    "economics": 65, 
+    "sociology": 72
   },
-  "riasec": {"R": 18, "I": 25, "A": 12, "S": 20, "E": 22, "C": 24},
+  "riasec": {
+    "R": 18, 
+    "I": 25, 
+    "A": 12, 
+    "S": 20, 
+    "E": 22, 
+    "C": 24
+  },
   "prestasi": 2,
-  "bidang_prestasi": "Matematika",
-  "minat": ["Sains dan Teknologi", "Teknik"]
+  "bidang_prestasi": "Technology",
+  "minat": ["Science & Technology", "Engineering"]
 }
 ```
 
-**Response:**
+**Response Body Example:**
 ```json
 {
   "success": true,
   "top3": [
     {
-      "jurusan": "Teknik Elektro",
-      "bidang": "Teknik",
-      "persen": 87,
-      "alasan": "Nilai Fisika-mu sangat baik..."
-    }
-  ]
+      "jurusan": "Computer Science",
+      "bidang": "Science and Technology",
+      "persen": 89.2,
+      "alasan": "With an outstanding 88 in Physics, you show the logical skills required for Computer Science. Your Investigative personality trait aligns strongly with Science and Technology majors. This path is an excellent way to leverage your talents."
+    },
+    ...
+  ],
+  "analysis": {
+    "riasec_type": "ICR",
+    "top_subjects": [["physics", 88.0], ["math", 85.0], ["chemistry", 82.0]]
+  }
 }
 ```
 
 ---
 
-## 🧪 Testing
+## 🧪 Model Evaluation
+
+To run an accuracy evaluation check on the synthetic dataset, run:
 
 ```bash
-python test_knn_model.py
+python3 model/evaluate_knn.py
 ```
 
-Menjalankan 5 test cases dengan berbagai profil siswa + edge case testing.
-
----
-
-## 📖 Dokumentasi Lengkap
-
-Lihat **[SETUP_GUIDE.md](SETUP_GUIDE.md)** untuk:
-- Setup & installation detail
-- Algorithm explanation mendalam
-- API reference lengkap
-- Troubleshooting guide
-
----
-
-## 🎓 Penggunaan
-
-### Untuk Siswa
-1. Isi data akademik dengan jujur
-2. Jawab 36 pertanyaan RIASEC sesuai kondisi nyata
-3. Dapatkan rekomendasi top 3 jurusan
-4. **Konsultasikan hasil dengan Guru BK**
-
-### Untuk Guru BK
-- Gunakan sebagai panduan diskusi awal dengan siswa
-- Cross-reference dengan tes psikologi formal
-- Pertimbangkan faktor eksternal (biaya, lokasi, etc)
+This runs an 80/20 train/test split on the 3,000 synthetic samples and outputs Top-1 and Top-3 accuracy scores.
 
 ---
 
 ## 📊 Dataset
 
-File `major_profile.csv` berisi profil 31 jurusan dengan:
-- Nilai ideal setiap mata pelajaran (1-5)
-- Profil RIASEC ideal (1-5)
-- Kategori bidang studi
+### Major Profiles (`model/major_profile.csv`)
+
+Includes ideal requirements for **30 majors** across 7 fields:
+
+| Field | Recommended Majors |
+|-------|--------------------|
+| Health | Medicine, Pharmacy |
+| Engineering | Industrial Engineering, Civil Engineering, Electrical Engineering, Mechanical Engineering, Architecture |
+| Science and Technology | Computer Science, Information Systems, Statistics, Actuarial Science, Mathematics, Biology |
+| Education and Creative | Guidance and Counseling, English Education, Visual Communication Design, Film and Animation |
+| Economics and Business | Management, Accounting, Digital Business, Economics, Entrepreneurship |
+| Agriculture and Marine | Marine Science, Agrotechnology, Agribusiness |
+| Social, Law and Governance | Psychology, Law, International Relations, Political Science, Public Administration |
 
 ---
 
-## 🐛 Troubleshooting
+## ☁️ Deployment Guide
 
-| Masalah | Solusi |
-|---------|--------|
-| "Connection refused" | Jalankan: `python app_integrated.py` |
-| "CSV not found" | Pastikan `major_profile.csv` di direktori utama |
-| API error | Cek console Flask untuk detail error |
+### Local Development
+Run the server locally with `python3 backend/app.py`. The application will serve the static files from the `frontend` folder.
 
----
-
-## 💡 Next Steps
-
-1. **Test model**: `python test_knn_model.py`
-2. **Run server**: `python app_integrated.py`
-3. **Access app**: http://localhost:5000
-4. **Isi form**: Ikuti 3 langkah input
-5. **Lihat hasil**: Top 3 rekomendasi jurusan
-
----
-
-## 🧪 ML Evaluation Notes
-
-- I added an 80/20 evaluation script (`evaluate_knn.py`) and also embedded evaluation utilities in `knn_model.py`.
-- I ran the 80/20 evaluation on the repository dataset and it produced 0% Top-1 and Top-3 accuracy for several `k` values. Reason:
-  - `major_profile.csv` is a prototype of *one profile per jurusan* (each jurusan appears once). A standard classification split (80/20) is not appropriate because the test set often contains jurusan labels not present in the training fold.
-
-Recommendations (options):
-
-1. Field-level evaluation (recommended): evaluate whether the model's top predictions belong to the same `bidang` (field) as the ground-truth — more meaningful for this dataset.
-2. Leave-One-Out ranking: run LOOCV but score whether the nearest neighbor (excluding self) shares the same `bidang`.
-3. Synthetic sampling: create multiple synthetic student samples per jurusan by adding small noise to the profile vectors, then run standard train/test to measure classification accuracy.
-
-How to reproduce the quick 80/20 run I executed:
-
-```bash
-pip install -r requirements.txt
-python evaluate_knn.py
-```
-
-If you want, I can implement LOOCV field-level evaluation or the synthetic-sampling approach and add plots and a short report. Say which option you prefer and I will implement it.
-
-
-**Dibuat untuk membantu siswa Indonesia memilih jurusan yang tepat 🎯**
+### Production Deployment
+1. **Docker Deployment**: You can easily wrap this Flask application in a Docker container using a `Dockerfile`:
+   ```dockerfile
+   FROM python:3.10-slim
+   WORKDIR /app
+   COPY backend/requirements.txt .
+   RUN pip install --no-cache-dir -r requirements.txt
+   COPY . .
+   EXPOSE 5001
+   CMD ["python", "backend/app.py"]
+   ```
+2. **Cloud Hosting (Render / Heroku / AWS)**: Deploy the Flask application by linking your git repository. Set the start command to `gunicorn backend.app:app` or run the Python script directly.
