@@ -27,8 +27,7 @@ Based on this data, it provides the **top 3 recommended majors** with similarity
 │       ├── riasec.js             # RIASEC test flow controller
 │       └── results.js            # Results & charts rendering
 │
-├── backend/                      # Flask Backend API
-│   ├── app.py                    # Flask server endpoints & routing
+├── backend/                      # Backend utilities and shared Python helpers
 │   ├── utils.py                  # Personalized reason generator
 │   └── requirements.txt          # Python packages list
 │
@@ -39,6 +38,7 @@ Based on this data, it provides the **top 3 recommended majors** with similarity
 │   └── riasec_questions.csv      # 36 English RIASEC questions
 │
 ├── README.md                     # Documentation
+├── streamlit_app.py              # New Streamlit wrapper that embeds the existing frontend
 └── .gitignore                    # Ignored files (caches, venv)
 ```
 
@@ -49,18 +49,22 @@ Based on this data, it provides the **top 3 recommended majors** with similarity
 ### 1️⃣ Install Dependencies
 
 ```bash
-pip3 install -r backend/requirements.txt
+pip3 install -r requirements.txt
 ```
 
 ### 2️⃣ Run the Server
 
-```bash
-python3 backend/app.py
-```
+- **Streamlit deployment**
+  ```bash
+  streamlit run streamlit_app.py
+  ```
+  Then open the Streamlit URL shown in the terminal.
+
+> `streamlit_app.py` is the main entrypoint now. The `backend/` folder remains for shared helpers like `utils.py`.
 
 ### 3️⃣ Open the App
 
-Open your web browser and navigate to: **http://localhost:5001**
+Open the URL printed by Streamlit after startup.
 
 ---
 
@@ -175,17 +179,21 @@ Includes ideal requirements for **30 majors** across 7 fields:
 ## ☁️ Deployment Guide
 
 ### Local Development
-Run the server locally with `python3 backend/app.py`. The application will serve the static files from the `frontend` folder.
+Run the app locally with Streamlit:
+
+```bash
+streamlit run streamlit_app.py
+```
 
 ### Production Deployment
-1. **Docker Deployment**: You can easily wrap this Flask application in a Docker container using a `Dockerfile`:
+1. **Docker Deployment**: You can wrap this Streamlit application in a Docker container using a `Dockerfile`:
    ```dockerfile
    FROM python:3.10-slim
    WORKDIR /app
    COPY backend/requirements.txt .
    RUN pip install --no-cache-dir -r requirements.txt
    COPY . .
-   EXPOSE 5001
-   CMD ["python", "backend/app.py"]
+   EXPOSE 8501
+   CMD ["streamlit", "run", "streamlit_app.py", "--server.port=8501", "--server.headless=true"]
    ```
-2. **Cloud Hosting (Render / Heroku / AWS)**: Deploy the Flask application by linking your git repository. Set the start command to `gunicorn backend.app:app` or run the Python script directly.
+2. **Cloud Hosting**: Deploy using any host that supports Streamlit, such as Streamlit Community Cloud, Render, or Heroku. Point the start command to `streamlit run streamlit_app.py --server.port=$PORT --server.headless=true`.

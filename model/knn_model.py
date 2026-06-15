@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import numpy as np
 import pandas as pd
+from sklearn.neighbors import KNeighborsClassifier
 from typing import List, Dict, Tuple
 
 FEATURE_COLS = [
@@ -76,6 +77,8 @@ class EduPathKNNModel:
         self.normalized_synthetic[:, :8] = self.synthetic_features[:, :8] / 100.0
         self.normalized_synthetic[:, 8:] = (self.synthetic_features[:, 8:] - 6.0) / 24.0
 
+        self._build_knn_model()
+
     def generate_synthetic_data(self, n_per_major: int = 100, random_state: int = 42) -> pd.DataFrame:
         """
         Generate synthetic student profiles based on ideal major profiles.
@@ -128,6 +131,16 @@ class EduPathKNNModel:
             
         return np.array(vec, dtype=float)
 
+    def _build_knn_model(self) -> None:
+        """Build an sklearn KNeighborsClassifier for distance lookup and evaluation."""
+        self.knn_model = KNeighborsClassifier(
+            n_neighbors=7,
+            weights='distance',
+            metric='euclidean',
+            algorithm='auto'
+        )
+        self.knn_model.fit(self.normalized_synthetic, self.synthetic_labels)
+
     def recommend(self, academic_scores: Dict[str, float], riasec_scores: Dict[str, float], 
                   prestasi: int = 0, bidang_prestasi: str = '', minat: List[str] = [], k: int = 7) -> List[Dict]:
         """
@@ -135,9 +148,19 @@ class EduPathKNNModel:
         """
         student_vec = self._normalize_student(academic_scores, riasec_scores)
 
+        # Use sklearn KNeighborsClassifier for raw neighbor ordering, but preserve the custom per-major weighted distance scoring.
+        if hasattr(self, 'knn_model') and self.knn_model is not None:
+            candidate_order = self.knn_model.kneighbors(
+                student_vec.reshape(1, -1),
+                n_neighbors=len(self.normalized_synthetic),
+                return_distance=False
+            )[0]
+        else:
+            candidate_order = np.arange(len(self.normalized_synthetic))
+
         dists = np.zeros(len(self.normalized_synthetic))
         
-        for idx in range(len(self.normalized_synthetic)):
+        for idx in candidate_order:
             # Ambil nama jurusan untuk baris data synthetic saat ini
             major_name = self.synthetic_labels[idx]
             
@@ -195,6 +218,7 @@ class EduPathKNNModel:
             
         # Find K nearest neighbors
         nearest_indices = np.argsort(adjusted_dists)[:k]
+        nearest_indices = candidate_order[nearest_indices]
         
         # Vote weighting by inverse distance: weight = 1 / (distance + epsilon)
         epsilon = 1e-5
