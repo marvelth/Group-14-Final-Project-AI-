@@ -1,14 +1,14 @@
 // ====== STATE VARIABLES ======
 window.userData = { nama: "", kelas: "" };
 window.nilaiData = {
-  math: 75,
-  indonesian: 75,
-  english: 75,
-  biology: 75,
-  physics: 75,
-  chemistry: 75,
-  economics: 75,
-  sociology: 75
+  math: "",
+  indonesian: "",
+  english: "",
+  biology: "",
+  physics: "",
+  chemistry: "",
+  economics: "",
+  sociology: ""
 };
 window.prestasiVal = 0;
 window.bidangPrestasi = "";

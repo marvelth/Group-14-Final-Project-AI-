@@ -131,14 +131,39 @@ class EduPathKNNModel:
     def recommend(self, academic_scores: Dict[str, float], riasec_scores: Dict[str, float], 
                   prestasi: int = 0, bidang_prestasi: str = '', minat: List[str] = [], k: int = 7) -> List[Dict]:
         """
-        Recommend top 3 unique majors using KNN (k=7) with weighted distance and bonuses.
+        Recommend top 3 unique majors using KNN with WEIGHTED Euclidean distance.
         """
         student_vec = self._normalize_student(academic_scores, riasec_scores)
+
+        dists = np.zeros(len(self.normalized_synthetic))
         
-        # Calculate base Euclidean distances to all synthetic samples
-        dists = np.linalg.norm(self.normalized_synthetic - student_vec.reshape(1, -1), axis=1)
-        
-        # Calculate bonuses per sample
+        for idx in range(len(self.normalized_synthetic)):
+            # Ambil nama jurusan untuk baris data synthetic saat ini
+            major_name = self.synthetic_labels[idx]
+            
+            # Ambil profil ideal jurusan ini dari base_df (isinya angka 1-5)
+            major_row = self.base_df[self.base_df['major'] == major_name].iloc[0]
+            
+            # Buat vector bobot berdasarkan profil ideal di csv
+            weight_vec = []
+            for col in FEATURE_COLS:
+                ideal_val = float(major_row[col])
+                # Jika nilai idealnya tinggi (4 atau 5), berikan bobot besar (misal dikali 3 atau 4)
+                # Jika nilai idealnya rendah (1 atau 2), berikan bobot kecil (misal 0.5 atau 1)
+                if ideal_val >= 4:
+                    weight_vec.append(3.0) 
+                elif ideal_val <= 2:
+                    weight_vec.append(0.5)
+                else:
+                    weight_vec.append(1.0)
+                    
+            weight_vec = np.array(weight_vec)
+            
+            # Hitung Weighted Euclidean Distance
+            diff = self.normalized_synthetic[idx] - student_vec
+            weighted_diff = diff * weight_vec 
+            dists[idx] = np.linalg.norm(weighted_diff)
+ 
         adjusted_dists = dists.copy()
         
         # Prestasi bonus: reduces distance if achievement field aligns with major's field
