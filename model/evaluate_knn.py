@@ -50,7 +50,7 @@ def main():
     model = EduPathKNNModel(csv_path=csv_path, synthetic_data_path=synth_path)
 
     X = model.normalized_synthetic
-    y = model.synthetic_labels
+    y = np.array(model.synthetic_labels)
 
     print(f"Total synthetic samples: {len(X)}")
     print("Splitting dataset: 80% train, 20% test...")
