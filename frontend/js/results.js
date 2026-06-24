@@ -73,7 +73,7 @@ window.renderHasil = function(top3, riasec) {
         </p>
       </div>
       
-      <button class="btn-restart" onclick="location.reload()">Take Test Again</button>
+      <button class="btn-restart" onclick="window.restartTest()">Take Test Again</button>
       <div style="height:48px"></div>
     `;
   }
@@ -92,4 +92,15 @@ window.buildRing = function(pct) {
       <text x="${cx}" y="${cy + 5}" text-anchor="middle" class="pct-text" font-size="13" font-weight="800" fill="#FFF" font-family="'Plus Jakarta Sans',sans-serif">${pct}%</text>
     </svg>
   `;
+};
+
+// ====== RESTART SUPPORT ======
+window.restartTest = function() {
+  if (window.runWithStreamlit && window.Streamlit) {
+    window.Streamlit.setComponentValue({
+      action: "reset",
+      timestamp: Date.now()
+    });
+  }
+  location.reload();
 };

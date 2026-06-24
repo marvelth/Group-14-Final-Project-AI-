@@ -196,6 +196,16 @@ window.analyzeWithAI = async function() {
     minat: window.minatList
   };
 
+  if (window.runWithStreamlit && window.Streamlit) {
+    window.Streamlit.setComponentValue({
+      action: "analyze",
+      requestData: requestData,
+      riasec: riasec,
+      timestamp: Date.now()
+    });
+    return;
+  }
+
   try {
     const resp = await fetch("/api/analyze", {
       method: "POST",
@@ -234,3 +244,21 @@ window.analyzeWithAI = async function() {
     }
   }
 };
+
+// ====== STREAMLIT INTEGRATION ======
+window.runWithStreamlit = false;
+if (window.Streamlit) {
+  window.Streamlit.events.addEventListener(window.Streamlit.RENDER_EVENT, function(event) {
+    window.runWithStreamlit = true;
+    window.Streamlit.setFrameHeight(1600);
+    
+    const responseData = event.detail.args.response_data;
+    if (responseData) {
+      if (typeof window.renderHasil === 'function') {
+        window.renderHasil(responseData.top3, responseData.riasec);
+      }
+    }
+  });
+  
+  window.Streamlit.setComponentReady();
+}
