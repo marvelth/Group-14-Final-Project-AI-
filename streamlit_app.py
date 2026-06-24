@@ -55,7 +55,7 @@ if "response_data" not in st.session_state:
 component_value = edu_path_component(
     key="edu_path_component",
     response_data=st.session_state.response_data,
-    height=2800
+    height=1600
 )
 
 # Handle actions from the component

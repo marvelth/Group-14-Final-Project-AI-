@@ -1,7 +1,7 @@
 import os
 import sys
 from pathlib import Path
-from flask import Flask, request, jsonify, send_from_path
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 
 # Add root directory to python path
@@ -32,7 +32,7 @@ def _normalize_riasec_scores(riasec_dict):
 
 @app.route('/')
 def index():
-    return send_from_path(str(BASE_DIR / "frontend"), 'index.html')
+    return send_from_directory(str(BASE_DIR / "frontend"), 'index.html')
 
 @app.route('/api/analyze', methods=['POST'])
 def analyze():
@@ -125,9 +125,9 @@ def health():
 def serve_static(path):
     frontend_path = BASE_DIR / "frontend" / path
     if frontend_path.exists() and frontend_path.is_file():
-        return send_from_path(str(BASE_DIR / "frontend"), path)
+        return send_from_directory(str(BASE_DIR / "frontend"), path)
     # Default fallback to index.html for single-page routing
-    return send_from_path(str(BASE_DIR / "frontend"), "index.html")
+    return send_from_directory(str(BASE_DIR / "frontend"), "index.html")
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5001))
