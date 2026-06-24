@@ -14,7 +14,7 @@ Hasil akhir menyajikan **Top 3 Rekomendasi Jurusan** yang dilengkapi dengan pers
 
 ## Link Hasil Deploy
 Setelah dideploy, Anda dapat mengakses web EduPath AI secara langsung melalui link berikut:
-- **[EduPath AI Web Application (Live Deploy)](https://edupath-ai.onrender.com)** *taro di sini linknya*
+- **[EduPath AI Web Application (Live Deploy)](https://final-project-edupath-ai.streamlit.app/)**
 
 
 ---
@@ -40,13 +40,19 @@ Berikut adalah struktur folder terbaru dari proyek EduPath AI:
 │   └── js/
 │       ├── app.js                # Pengelola state aplikasi & handler API AJAX
 │       ├── riasec.js             # Logika alur kuis RIASEC
-│       └── results.js            # Rendering grafik hasil rekomendasi
+│       ├── results.js            # Rendering grafik hasil rekomendasi
+│       └── streamlit-component-lib.js # Jembatan komunikasi Custom Component Streamlit
 │
 ├── backend/                      # Logika utilitas Python dan pembantu data
 │   ├── utils.py                  # Logika pembuat teks penjelasan rekomendasi (natural language)
 │   └── requirements.txt          # Daftar package Python lokal backend
 │
 ├── model/                        # Lapisan Machine Learning & Dataset
+│   ├── evaluation_charts         # Grafik hasil evaluasi model KNN
+│       ├── confusion_matrix.png  # Confusion matrix heatmap (test set, K=7)
+│       ├── crossval_scores.png   # 5-Fold Cross Validation per-fold accuracy
+│       ├── field_accuracy.png    # Average accuracy grouped by academic field
+│       ├── per_class_f1.png      # Per-class F1-score for all 30 majors
 │   ├── knn_model.py              # Kelas model KNN & pembuat data sintetis Gaussian
 │   ├── evaluate_knn.py           # Script pengujian akurasi klasifikasi KNN
 │   ├── major_profile.csv         # Profil ideal 30 jurusan (Dataset acuan)
@@ -58,7 +64,7 @@ Berikut adalah struktur folder terbaru dari proyek EduPath AI:
 │   └── edupath_poster.pdf        # Poster Rangkuman Edupath AI
 │
 ├── app.py                        # SERVER UTAMA: Flask backend & static server (Direkomendasikan)
-├── streamlit_app.py              # Wrapper lokal menggunakan Streamlit iframe
+├── streamlit_app.py              # Wrapper Streamlit menggunakan Custom Component
 ├── Dockerfile                    # Konfigurasi container untuk deploy ke production
 ├── requirements.txt              # Ketergantungan package Python global
 ├── README.md                     # Dokumentasi proyek (Dokumen ini)
@@ -68,8 +74,6 @@ Berikut adalah struktur folder terbaru dari proyek EduPath AI:
 ---
 
 ## Cara Menjalankan Aplikasi Secara Lokal - Manual Instalasi (Langkah demi Langkah)
-
-Ikuti langkah-langkah di bawah ini untuk menyiapkan lingkungan kerja Anda secara manual di komputer lokal:
 
 1. **Clone repositori proyek ini** ke komputer Anda.
 2. **Buka terminal** lalu arahkan ke direktori proyek:
