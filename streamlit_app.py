@@ -200,6 +200,7 @@ backend_port = start_local_backend_server()
 frontend_url = f'http://127.0.0.1:{backend_port}/'
 
 import streamlit as st
+import streamlit.components.v1 as components
 
 st.set_page_config(page_title='EduPath AI', layout='wide')
 
@@ -210,4 +211,4 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.iframe(frontend_url, height=1600)
+components.iframe(frontend_url, height=1600, scrolling=True)
