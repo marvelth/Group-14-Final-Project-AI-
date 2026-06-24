@@ -310,10 +310,10 @@ body {
   background: var(--accent);
   color: #FFF;
   border: none;
-  padding: 16px;
+  padding: 12px;
   border-radius: var(--radius-sm);
   font-family: inherit;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -368,7 +368,7 @@ body {
 .form-container {
   max-width: 740px;
   margin: 0 auto;
-  padding: 50px 24px;
+  padding: 20px 24px;
 }
 .section-title {
   font-family: 'Lora', serif;
@@ -380,14 +380,14 @@ body {
 .section-sub {
   color: var(--ink-soft);
   font-size: 15px;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
 }
 .card {
   background: var(--surface);
   border: 1px solid var(--surface-border);
   border-radius: var(--radius);
-  padding: 34px;
-  margin-bottom: 24px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
   box-shadow: var(--shadow);
 }
 .card-label {
@@ -396,7 +396,7 @@ body {
   text-transform: uppercase;
   letter-spacing: 1.5px;
   color: var(--accent);
-  margin-bottom: 20px;
+  margin-bottom: 12px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -406,13 +406,13 @@ body {
 .nilai-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 12px;
 }
 .nilai-item {
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: var(--radius-sm);
-  padding: 16px;
+  padding: 10px 14px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -422,7 +422,7 @@ body {
   font-size: 12px;
   font-weight: 700;
   color: var(--ink-soft);
-  margin-bottom: 10px;
+  margin-bottom: 0;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -470,15 +470,15 @@ body {
 /* Prestasi Options */
 .prestasi-options {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 10px;
-  margin-bottom: 24px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
 }
 .pill-option {
-  padding: 12px 18px;
+  padding: 8px 12px;
   border: 1px solid var(--surface-border);
   border-radius: var(--radius-sm);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -493,15 +493,15 @@ body {
 }
 .bidang-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-  gap: 10px;
-  margin-top: 14px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 10px;
 }
 .bidang-option {
-  padding: 12px 10px;
+  padding: 8px 6px;
   border: 1px solid var(--surface-border);
   border-radius: var(--radius-sm);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -1041,9 +1041,6 @@ body {
 
 /* ====== RESPONSIVENESS ====== */
 @media (max-width: 768px) {
-  .nilai-grid, .minat-grid {
-    grid-template-columns: 1fr;
-  }
   .top-card {
     grid-template-columns: auto 1fr;
     grid-template-rows: auto auto;
@@ -1059,7 +1056,10 @@ body {
     grid-column: 1 / -1;
   }
   .prestasi-options {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .bidang-grid {
+    grid-template-columns: repeat(2, 1fr); 
   }
   .page-header {
     padding: 16px 24px;
